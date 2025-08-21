@@ -1,0 +1,16 @@
+# Node.js 이미지 선택
+FROM node:23.9.0
+
+# 앱 디렉토리 생성
+WORKDIR /app
+
+# package.json 복사 및 의존성 설치
+COPY package*.json ./
+RUN npm install
+
+# 소스 복사
+COPY . .
+
+# 앱 실행
+EXPOSE 5000
+CMD ["npm", "start"]
