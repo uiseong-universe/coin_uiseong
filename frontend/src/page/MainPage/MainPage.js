@@ -1,10 +1,15 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import './MainPage22.css'
+import './MainPage.css'
+import MissionCard from './components/MissionCard'
+import QuestCard from './components/QuestCard'
+import RouteCard from './components/RouteCard'
+import QuestProgressItem from './components/QuestProgressItem'
 
 const App = () => {
     const [selectedRoute, setSelectedRoute] = useState(null);
     const [isQuestStarted, setIsQuestStarted] = useState(false);
+    const baseImgUrl = process.env.PUBLIC_URL+'/assets/images/'
 
     const tourismRoutes = [
         {
@@ -123,9 +128,8 @@ const App = () => {
             <div className="main-content-grid">
                 {/* Left Side - Mission & Route Selection */}
                 <div className="left-panel">
-                    {selectedRoute && !isQuestStarted ? (
-                        <>
-                            {/* Display quests for the selected route */}
+                    {selectedRoute ? (
+                        !isQuestStarted ? (
                             <section className="mission-section">
                                 <div className="section-header">
                                     <h3>{selectedRoute.title}</h3>
@@ -145,7 +149,55 @@ const App = () => {
                                 </div>
                                 <button onClick={handleStartQuest} className="start-button">퀘스트 시작하기</button>
                             </section>
-                        </>
+                        ) : (
+                            <section className="mission-section">
+                                {/* 기준 위치 예시 좌표 (의성 조문국 박물관) 및 체험 프로그램 거리/시간 데이터 */}
+                                {(() => {
+                                    const experiencePrograms = [
+                                        { title: '사과따기', distance: '2.2', duration: 20, location: '사촌마을'  , iconPath:baseImgUrl+'/uiseong_cafe.jpeg' },
+                                        { title: '목공체험', distance: '1.5', duration: 12, location: '목공방 1관' , iconPath:baseImgUrl+'/uiseong_cj.jpg' },
+                                        { title: '막걸리 만들기', distance: '3.0', duration: 25, location: '무원칙주의' , iconPath:baseImgUrl+'/uiseong_mak.jpeg' },
+                                        { title: '차(Tea)만들기', distance: '2.7', duration: 18, location: '전통찻집' , iconPath:baseImgUrl+'/uiseong_gz.jpg' },
+                                        { title: '자세교정프로그램', distance: '1.1', duration: 10, location: '하람예술센터' , iconPath:baseImgUrl+'/uiseong_model.jpeg' },
+                                        { title: '도자기 핸드페인팅', distance: '0.9', duration: 7, location: '제월아트체험센터' , iconPath:baseImgUrl+'/uiseong_jewal.png' },
+                                        { title: '의성자두따기', distance: '2.9', duration: 22, location: '자두밭 체험장' , iconPath:baseImgUrl+'/uiseong_jadu.jpg' },
+                                    ];
+                                    return (
+                                        <>
+                                            <div className="section-header">
+                                                <h3>체험 프로그램 추가하기</h3>
+                                            <button
+                                                onClick={handleBack}
+                                                style={{
+                                                    color: 'red',
+                                                    padding: '10px 20px',
+                                                    border: '1px solid red',
+                                                    borderRadius: '5px',
+                                                    backgroundColor: 'transparent'
+                                                }}
+                                            >
+                                                ← 퀘스트 포기하기
+                                            </button>
+                                            </div>
+                                            <div className="mission-grid">
+                                                {experiencePrograms.map((program, index) => (
+                                                    <MissionCard 
+                                                        key={index}
+                                                        title={program.title}
+                                                        description={`${program.title}에 참여해 보세요!`}
+                                                        iconBgClass="icon-circle green"
+                                                        iconPath={program.iconPath}
+                                                        distance={program.distance}
+                                                        duration={program.duration}
+                                                        location={program.location}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </>
+                                    );
+                                })()}
+                            </section>
+                        )
                     ) : (
                         <>
                             {/* Online Missions Section */}
@@ -250,101 +302,9 @@ const App = () => {
     );
 };
 
-// Mission Card Component
-const MissionCard = ({ title, description, iconBgClass, iconPath, footerText }) => {
-    return (
-        <div className="mission-card">
-            <div className={iconBgClass}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={iconPath}></path>
-                </svg>
-            </div>
-            <h4>{title}</h4>
-            <p>{description}</p>
-            <div className="mission-card-footer">
-                {footerText && <span className="time-left">{footerText}</span>}
-                <a href="#" className="participate-link">참여하기</a>
-            </div>
-        </div>
-    );
-};
-
-// Route Card Component
-const RouteCard = ({ title, description, iconBgClass, iconPath, onClick }) => {
-    return (
-        <div className="mission-card" onClick={onClick}>
-            <div className={iconBgClass}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={iconPath}></path>
-                </svg>
-            </div>
-            <h4>{title}</h4>
-            <p>{description}</p>
-            <div className="mission-card-footer" style={{justifyContent: 'flex-end'}}>
-                <a href="#" className="participate-link">선택하기</a>
-            </div>
-        </div>
-    );
-};
-
-// Quest Card Component
-const QuestCard = ({ title, description, iconBgClass, iconPath, status }) => {
-    const isLocked = status === '잠금';
-    return (
-        <div className="mission-card">
-            <div className={iconBgClass}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={iconPath}></path>
-                </svg>
-            </div>
-            <h4>{title}</h4>
-            <p>{description}</p>
-            <div className="mission-card-footer">
-                <span className="status-text">{status}</span>
-                <a href="#" className={`qr-link ${isLocked ? 'locked-link' : ''}`}>
-                    {isLocked ? '잠금' : 'QR 스캔'}
-                </a>
-            </div>
-        </div>
-    );
-};
 
 // Quest Progress Item Component
-const QuestProgressItem = ({ title, subtitle, status }) => {
-    let statusClass = '';
-    let statusIcon = null;
 
-    if (status === 'completed') {
-        statusClass = 'completed';
-        statusIcon = (
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"></path>
-            </svg>
-        );
-    } else if (status === 'ongoing') {
-        statusClass = 'ongoing';
-        statusIcon = (<span>2</span>);
-    } else {
-        statusClass = 'locked';
-        statusIcon = (
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path>
-            </svg>
-        );
-    }
-
-    return (
-        <li className={`quest-item ${statusClass}`}>
-            <div className={`quest-status ${statusClass}`}>
-                {statusIcon}
-            </div>
-            <div className="quest-details">
-                <h4 className={status === 'ongoing' ? 'ongoing-title' : ''}>{title}</h4>
-                <p>{subtitle}</p>
-            </div>
-        </li>
-    );
-};
 
 
 export default App;
