@@ -1,0 +1,13 @@
+# Node.js 이미지
+FROM node:18
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install --legacy-peer-deps
+
+COPY . .
+
+# React 빌드 (배포 시 nginx 사용 가능)
+EXPOSE 3000
+CMD ["npm", "start"]
